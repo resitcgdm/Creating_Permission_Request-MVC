@@ -1,0 +1,107 @@
+﻿@{
+    //ViewData["Title"] = "izin";
+    Layout = null;
+}
+@using Entities.Concrete
+@model User
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous" />
+    <title>Tarih Seçme</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="form-group">
+            <label for="baslangic">Başlangıç Tarihi</label>
+            <input type="date" class="form-control" id="baslangic" />
+        </div>
+        <div class="form-group">
+            <label for="bitis">Bitiş Tarihi</label>
+
+            <input type="date" class="form-control" id="bitis" />
+        </div>
+        <button type="button" class="btn btn-primary" id="izinSorgula">İzin Sorgula</button>
+       
+
+        <div style="
+             position: absolute;
+             bottom: 25px;
+             min-width: 265px;">
+            <div id="toastContainer" class="toast toast-bottom-left bg-danger " role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+                <div class="toast-header">
+                    <strong class="mr-auto">Bilgilendirme</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    Yeterli izin bakiyeniz bulunmamaktadır.
+                </div>
+            </div>
+            <div id="toastContainer2" class="toast toast-bottom-left bg-success " role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+                <div class="toast-header">
+                    <strong class="mr-auto">Bilgilendirme</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    İzin talebi alınmıştır
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"
+            integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY="
+            crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            var model = @Html.Raw(Json.Serialize(Model));
+            console.log(model)
+            $("#izinSorgula").click(function () {
+                var baslangicTarihi = new Date($("#baslangic").val());
+                var bitisTarihi =
+                    new Date($("#bitis").val());
+                var isGunuSayisi = 0;
+
+                while (baslangicTarihi <= bitisTarihi) {
+                    if (baslangicTarihi.getDay() !== 0 && baslangicTarihi.getDay() !== 6) {
+                        isGunuSayisi++;
+                    }
+                    baslangicTarihi.setDate(baslangicTarihi.getDate() + 1);
+                }
+               
+                if (isGunuSayisi >= @Model.Limit) {
+                    $(document).ready(function () {
+                        $('#toastContainer').toast('show');
+                    })
+                } else {
+                    $(document).ready(function () {
+                        $('#toastContainer2').toast('show');
+                    })
+
+                }
+
+
+            });
+        });
+      
+
+
+
+    </script>
+
+    @await Component.InvokeAsync("NToastNotify")
+</body>
+</html>
+
